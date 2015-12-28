@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<s:ItemRenderer xmlns:fx="http://ns.adobe.com/mxml/2009" 
+				xmlns:s="library://ns.adobe.com/flex/spark"
+				xmlns:mx="library://ns.adobe.com/flex/mx" height="40"
+				autoDrawBackground="true" implements="mx.core.IFactory"
+				>
+	
+	<fx:Script>
+		<![CDATA[
+			import com.facebook.graph.FacebookDesktop;
+			import com.facebook.graph.utils.FacebookDataUtils;
+			
+			public function newInstance():* {
+				return new FriendsListRenderer();
+			}
+			
+			override public function set data(value:Object):void {
+				super.data = value;
+				if (value != null) {
+					labelTxt.text = value.name;
+				}
+				if (data != null) {
+					img.source = FacebookDesktop.getImageUrl(data.id);
+				}
+			}
+			
+		]]>
+	</fx:Script>
+	<s:HGroup height="100%" verticalAlign="top" paddingBottom="0" paddingLeft="5" paddingRight="5" paddingTop="5">
+		<mx:Image id="img" width="30" height="30"   />	
+		<s:VGroup>
+			<s:Label id="labelTxt" />
+		</s:VGroup>
+	</s:HGroup>
+	
+</s:ItemRenderer>

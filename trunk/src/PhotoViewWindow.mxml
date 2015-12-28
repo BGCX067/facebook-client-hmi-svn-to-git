@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Window xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		  xmlns:s="library://ns.adobe.com/flex/spark" 
+		  xmlns:mx="library://ns.adobe.com/flex/mx" width="800" height="600"
+		  backgroundColor="0xd52A03"
+		  creationComplete="getPhotoAlbums()">
+	<s:layout>
+		<s:VerticalLayout/>
+	</s:layout>
+
+	<fx:Declarations>
+		<mx:WipeDown id="imageAddedEffect" startDelay="100" />
+		
+		<mx:Parallel id="imageRemovedEffect">
+			<mx:Zoom />
+			<mx:Fade />
+		</mx:Parallel>	
+	</fx:Declarations>
+	
+	<fx:Style source="PhotoAlbum.css"/>	
+	
+	<fx:Script>
+		<![CDATA[
+			import com.facebook.graph.FacebookDesktop;
+			
+			import mx.collections.ArrayCollection;
+			import mx.controls.Image;
+			import mx.controls.Label;
+			import mx.controls.Text;
+			import mx.effects.Resize;
+			import mx.events.ItemClickEvent;
+			import mx.events.ListEvent;
+			import mx.events.ResizeEvent;
+			import mx.managers.PopUpManager;			
+			
+			[Bindable] private var facebookPhotoAlbums:ArrayCollection;
+			[Bindable] private var facebookPhotos:ArrayCollection;
+			public var userId:String;
+			
+			
+			private function getPhotoAlbums():void {
+				var fql:String = "select name, aid from album where owner = "+userId;				
+				FacebookDesktop.fqlQuery(fql, handleGetAlbumsResponse);
+			}
+			
+			private function handleGetAlbumsResponse(albums:Object, fail:Object):void {
+				if (albums != null) {
+					facebookPhotoAlbums = new ArrayCollection(albums as Array);
+					if (facebookPhotoAlbums.length>0) {
+						albumsDataGrid.selectedIndex=0;
+						showSelectedAlbum();
+					}
+				}
+				else
+					status = "Error";
+			}
+			
+			private function showSelectedAlbum():void {
+				var fql:String = "select src_big, src_small from photo where aid = '" + albumsDataGrid.selectedItem.aid + "'";
+				FacebookDesktop.fqlQuery(fql, handleGetPhotosResponse);
+			}
+			
+			private function handleGetPhotosResponse(photos:Object, fail:Object):void {
+				if (photos != null) 
+					facebookPhotos = new ArrayCollection(photos as Array);
+				else
+					status = "Error";
+			}
+			
+			
+			private var img:Image;
+			private var imgLabel:mx.controls.Label;
+			
+			private function tileListItemClick(evt:ListEvent):void {
+				img = new Image();
+
+				img.maintainAspectRatio = true;
+				img.addEventListener(Event.COMPLETE, imageComplete);
+				img.addEventListener(ResizeEvent.RESIZE, imageResize);
+				img.addEventListener(MouseEvent.CLICK, imageClick);
+				img.source = evt.itemRenderer.data.src_big;
+				img.setStyle("addedEffect", imageAddedEffect);
+				img.setStyle("removedEffect", imageRemovedEffect);
+				imgLabel=new mx.controls.Label();
+				imgLabel.text="Click image to close";
+				imgLabel.styleName="imgLabel";
+				PopUpManager.addPopUp(imgLabel, this, false);
+				PopUpManager.addPopUp(img, this, true);
+			}
+			
+			private function imageClick(evt:MouseEvent):void {
+				PopUpManager.removePopUp(imgLabel);
+				PopUpManager.removePopUp(evt.currentTarget as Image);
+			}
+			
+			private function imageResize(evt:ResizeEvent):void {
+				PopUpManager.centerPopUp(evt.currentTarget as Image);
+			}
+			
+			private function imageComplete(evt:Event):void {
+				PopUpManager.centerPopUp(evt.currentTarget as Image);
+			}
+			
+		]]>
+	</fx:Script>
+	
+
+	
+	<s:HGroup verticalAlign="middle" >
+		<s:Label text="Select album:" x="5" y="5"/>
+		<s:List  id="albumsDataGrid"  dataProvider="{facebookPhotoAlbums}" change="showSelectedAlbum()" height="60" width="277">
+			<s:itemRenderer>
+				<fx:Component>
+					<s:ItemRenderer>
+						<s:Label text="{data.name}" paddingTop="5" paddingLeft="5" paddingBottom="5" paddingRight="5" buttonMode="true" />	
+					</s:ItemRenderer>				
+				</fx:Component>
+			</s:itemRenderer>
+			
+		</s:List>
+		
+	</s:HGroup>
+	<mx:TileList  
+		id="photosList" 
+		dataProvider="{facebookPhotos}" 
+		width="100%" height="100%"
+		verticalScrollPolicy="on"
+		rowHeight="120"
+		columnWidth="120"
+		itemRenderer="PhotoThumbnailsRenderer"
+		itemClick="tileListItemClick(event);" />
+	
+</s:Window>

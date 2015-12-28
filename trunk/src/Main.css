@@ -1,0 +1,25 @@
+
+@namespace mx "library://ns.adobe.com/flex/halo";
+@namespace s "library://ns.adobe.com/flex/spark";
+
+ s|Button {
+	skinClass: ClassReference('MyButtonSkin');
+	chrome-color: "0x505050";
+	
+	
+	color: #FFFFFF;
+}
+
+
+ s|Button:over {
+	chrome-color: "0xd52A03";
+}
+        
+
+ s|Button:down {
+	chrome-color: "0xE53A13";
+}
+  
+s|WindowedApplication {
+	backgroundColor: #006699;
+}

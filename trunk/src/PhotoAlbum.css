@@ -1,0 +1,9 @@
+/* CSS file */
+@namespace s "library://ns.adobe.com/flex/spark";
+@namespace mx "library://ns.adobe.com/flex/mx";
+
+.imgLabel {
+	font-weight:bold;
+	font-size: 20pt;
+	
+}

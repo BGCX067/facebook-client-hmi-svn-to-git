@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+
+
+<s:SparkSkin 
+	xmlns:fx="http://ns.adobe.com/mxml/2009" 
+	xmlns:s="library://ns.adobe.com/flex/spark" 
+	xmlns:fb="http://ns.adobe.com/flashbuilder/2009"
+	>
+	
+	<!-- host component -->
+	<fx:Metadata>[HostComponent("spark.components.Button")]</fx:Metadata>
+	
+	<fx:Script>
+		<![CDATA[         
+			/* Define the skin elements that should not be colorized. 
+			exclude symbol and text group */
+			static private const exclusions:Array = [ "textGroup"];
+			
+			/** 
+			 * @copy spark.skins.SparkSkin#colorizeExclusions
+			 */        
+			override public function get colorizeExclusions():Array {return exclusions;}
+			
+			/**
+			 * @private
+			 */
+			override protected function initializationComplete():void
+			{
+				useChromeColor = true;
+				super.initializationComplete();
+			}  
+		]]>        
+	</fx:Script>
+	
+	
+	<!-- states -->
+	<s:states>
+		<s:State name="up" />
+		<s:State name="over" stateGroups="overStates"/>
+		<s:State name="down" stateGroups="overStates" />
+		<s:State name="disabled" />
+	</s:states>
+	
+	<!-- Transitions for the background gradient and the shadows between declared styles -->
+	<s:transitions>
+		<s:Transition  fromState="up" toState="over" autoReverse="true" >
+			<s:AnimateColor  targets="{[ge1, ge2, ge3, ge4]}"  duration="250" />
+		</s:Transition>
+		<s:Transition  fromState="over" toState="up" autoReverse="true" >
+			<s:AnimateColor targets="{[ge1, ge2, ge3, ge4]}" duration="750" />
+		</s:Transition>
+		<s:Transition  fromState="over" toState="down" autoReverse="true" >
+			<s:Animate duration="150" targets="{[dsfBg]}" >
+				<s:SimpleMotionPath  property="strength" />
+			</s:Animate>
+		</s:Transition>
+		<s:Transition  fromState="down" toState="*" autoReverse="true" >
+			<s:Animate duration="150" targets="{[dsfBg]}" >
+				<s:SimpleMotionPath property="strength"  />
+			</s:Animate>
+		</s:Transition>
+	</s:transitions>
+	
+	<!-- The background gradient in greyscale, using lighter values on overstates (stateGroup) -->
+	<s:Rect left="1" right="1" top="1" bottom="1" radiusX="4" radiusY="4">
+		<s:filters>
+			<s:DropShadowFilter id="dsfBg" alpha="0.5" blurX="0" blurY="0" distance="1" strength="1" strength.down="0"  />
+		</s:filters>
+		<s:fill>
+			<s:LinearGradient x="32.019" y="0.5" scaleX="25.5708" rotation="90">
+				<s:GradientEntry id="ge1" color="#ffffff" color.disabled="#111111"  color.overStates="#ffffff" ratio="0"/>
+				<s:GradientEntry id="ge2" color="#939393" color.disabled="#111111" color.overStates="#e3e3e3" ratio="0.5"/>
+				<s:GradientEntry id="ge3" color="#7e7e7e" color.disabled="#111111" color.overStates="#cecece" ratio="0.5"/>
+				<s:GradientEntry id="ge4" color="#6a6a6a" color.disabled="#111111" color.overStates="#bbbbbb" ratio="1"/>
+			</s:LinearGradient>
+		</s:fill>
+		<s:stroke>
+			<s:SolidColorStroke color="#ffffff" caps="none" weight="1" joints="miter" miterLimit="4"/>
+		</s:stroke>
+	</s:Rect>
+	
+
+	
+	<!-- Label with a shadow applied to it. In a group for colorization exclusion -->
+	<s:Group id="textGroup" verticalCenter="0"  top="7" bottom="7" left="10">
+		<s:filters>
+			<s:DropShadowFilter alpha="0.5" blurX="0" blurY="0" distance="1" />
+		</s:filters>    
+		<s:Label id="labelDisplay"
+				 textAlign="center"
+				 verticalAlign="middle"
+				 lineBreak="toFit"
+				 right="10">
+		</s:Label>
+	</s:Group>
+	
+	
+	
+</s:SparkSkin>
+
